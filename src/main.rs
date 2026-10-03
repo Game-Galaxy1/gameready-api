@@ -5,8 +5,7 @@ mod routes;
 mod state;
 
 use axum::{routing::{get, patch, post}, Router};
-use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
-use std::str::FromStr;
+use sqlx::postgres::{PgConnectOptions, PgPoolOptions, PgSslMode};
 use tower_http::cors::{Any, CorsLayer};
 
 #[tokio::main]
@@ -15,7 +14,13 @@ async fn main() -> anyhow::Result<()> {
 
     let config = config::Config::from_env()?;
 
-    let connect_opts = PgConnectOptions::from_str(&config.database_url)?
+    let connect_opts = PgConnectOptions::new()
+        .host(&config.db_host)
+        .port(config.db_port)
+        .username(&config.db_user)
+        .password(&config.db_password)
+        .database(&config.db_name)
+        .ssl_mode(PgSslMode::Require)
         .statement_cache_capacity(0);
 
     let db = PgPoolOptions::new()
