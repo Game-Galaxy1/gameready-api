@@ -5,7 +5,7 @@ mod routes;
 mod state;
 
 use axum::{routing::{get, patch, post}, Router};
-use sqlx::postgres::{PgConnectOptions, PgPoolOptions, PgSslMode};
+use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
 use tower_http::cors::{Any, CorsLayer};
 
 #[tokio::main]
@@ -20,7 +20,6 @@ async fn main() -> anyhow::Result<()> {
         .username(&config.db_user)
         .password(&config.db_password)
         .database(&config.db_name)
-        .ssl_mode(PgSslMode::Require)
         .statement_cache_capacity(0);
 
     let db = PgPoolOptions::new()
